@@ -27,6 +27,15 @@ static void handle_event(const ls_event_t *event, void *user_data) {
     } else if (event->type == EVT_RECORD_STOP && g_ctx.recording) {
         ls_log(LS_LOG_INFO, "recording", "Recording stopped");
         g_ctx.recording = 0;
+    } else if (event->type == EVT_BUTTON_PRESS) {
+        const ls_payload_button_t *payload = (const ls_payload_button_t*)event->payload;
+        if (strcmp(payload->button, "middle") == 0) {
+            if (g_ctx.recording) {
+                ls_event_emit(EVT_RECORD_STOP, "recording_button");
+            } else {
+                ls_event_emit(EVT_RECORD_START, "recording_button");
+            }
+        }
     }
 }
 
@@ -84,6 +93,7 @@ static int recording_init(ls_module_t *mod) {
 
     ls_event_subscribe(EVT_RECORD_START, handle_event, NULL);
     ls_event_subscribe(EVT_RECORD_STOP, handle_event, NULL);
+    ls_event_subscribe(EVT_BUTTON_PRESS, handle_event, NULL);
 
     ls_log(LS_LOG_INFO, "recording", "Initialized (%s to %s)", cfg->record_codec, filepath);
     return 0;
