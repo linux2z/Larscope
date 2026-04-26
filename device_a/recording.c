@@ -48,12 +48,7 @@ static int recording_init(ls_module_t *mod) {
     g_object_set(G_OBJECT(capsfilter), "caps", caps, NULL);
     gst_caps_unref(caps);
     
-    /* Use Rockchip HW encoder */
-    if (strcmp(cfg->record_codec, "h265") == 0) {
-        g_ctx.encoder = gst_element_factory_make("mpph265enc", "rec_enc");
-    } else {
-        g_ctx.encoder = gst_element_factory_make("mpph264enc", "rec_enc");
-    }
+    g_ctx.encoder = gst_element_factory_make("x264enc", "rec_enc");
     
     g_ctx.muxer = gst_element_factory_make("mp4mux", "rec_mux");
     g_ctx.sink = gst_element_factory_make("filesink", "rec_sink");
@@ -68,8 +63,8 @@ static int recording_init(ls_module_t *mod) {
     snprintf(filepath, sizeof(filepath), "%s/record.mp4", cfg->storage_path);
     g_object_set(G_OBJECT(g_ctx.sink), "location", filepath, NULL);
     
-    /* Target bitrate in bps */
-    g_object_set(G_OBJECT(g_ctx.encoder), "bps", cfg->record_bitrate_kbps * 1000, NULL);
+    /* Target bitrate in kbps */
+    g_object_set(G_OBJECT(g_ctx.encoder), "bitrate", cfg->record_bitrate_kbps, NULL);
 
     gst_bin_add_many(GST_BIN(pipeline), g_ctx.queue, conv, capsfilter, g_ctx.encoder, g_ctx.muxer, g_ctx.sink, NULL);
     if (!gst_element_link_many(g_ctx.queue, conv, capsfilter, g_ctx.encoder, g_ctx.muxer, g_ctx.sink, NULL)) {

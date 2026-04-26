@@ -15,7 +15,10 @@ client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 try:
     client.connect(host, username=user, password=password, timeout=15)
-    stdin, stdout, stderr = client.exec_command(command, timeout=120)
+    stdin, stdout, stderr = client.exec_command(command, timeout=300, get_pty=True)
+    if 'sudo' in command:
+        stdin.write(password + '\n')
+        stdin.flush()
     out = stdout.read().decode('utf-8', errors='replace')
     err = stderr.read().decode('utf-8', errors='replace')
     if out:

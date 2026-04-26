@@ -54,19 +54,11 @@ static int streaming_init(ls_module_t *mod) {
      */
     
     char launch_str[512];
-    if (strcmp(cfg->stream_codec, "h265") == 0) {
-        snprintf(launch_str, sizeof(launch_str),
-                 "( v4l2src device=%s ! jpegdec ! videoscale ! video/x-raw,width=%d,height=%d "
-                 "! videoconvert ! video/x-raw,format=NV12 "
-                 "! mpph265enc bps=%d rc-mode=vbr ! rtph265pay name=pay0 pt=96 )",
-                 cfg->video_device, cfg->stream_width, cfg->stream_height, cfg->stream_bitrate_kbps * 1000);
-    } else {
-        snprintf(launch_str, sizeof(launch_str),
-                 "( v4l2src device=%s ! jpegdec ! videoscale ! video/x-raw,width=%d,height=%d "
-                 "! videoconvert ! video/x-raw,format=NV12 "
-                 "! mpph264enc bps=%d rc-mode=vbr ! rtph264pay name=pay0 pt=96 )",
-                 cfg->video_device, cfg->stream_width, cfg->stream_height, cfg->stream_bitrate_kbps * 1000);
-    }
+    snprintf(launch_str, sizeof(launch_str),
+             "( v4l2src device=%s ! jpegdec ! videoscale ! video/x-raw,width=%d,height=%d "
+             "! videoconvert ! video/x-raw,format=I420 "
+             "! x264enc bitrate=%d tune=zerolatency speed-preset=ultrafast ! rtph264pay name=pay0 pt=96 )",
+             cfg->video_device, cfg->stream_width, cfg->stream_height, cfg->stream_bitrate_kbps);
 
     gst_rtsp_media_factory_set_launch(g_ctx.factory, launch_str);
     gst_rtsp_media_factory_set_shared(g_ctx.factory, TRUE);

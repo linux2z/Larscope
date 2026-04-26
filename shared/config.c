@@ -30,7 +30,7 @@ static void set_defaults(void) {
     g_config.stream_height = 2160;
     g_config.stream_bitrate_kbps = 8000;
     
-    strcpy(g_config.record_codec, "h265");
+    strcpy(g_config.record_codec, "h264");
     g_config.record_bitrate_kbps = 10000;
     g_config.split_time_min = 30;
     
