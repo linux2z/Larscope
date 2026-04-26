@@ -1,0 +1,20 @@
+# Build artifacts
+*.o
+*.a
+*.so
+larscope-a
+larscope-b
+
+# Python
+__pycache__/
+*.pyc
+
+# IDEs / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Media / Recordings
+record.mp4
+*.jpg
+*.mp4

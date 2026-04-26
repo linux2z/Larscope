@@ -1,0 +1,18 @@
+[Unit]
+Description=Larscope Medical Imaging System (Device A)
+After=network.target local-fs.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/pi/larscope_build/device_a
+ExecStart=/home/pi/larscope_build/device_a/larscope-a
+Restart=always
+RestartSec=5
+
+# Watchdog if supported
+# WatchdogSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,22 @@
+{
+  "system": {
+    "log_level": 0,
+    "log_file": "larscope.log",
+    "storage_path": "/mnt/sdcard/larscope"
+  },
+  "camera": {
+    "video_device": "/dev/video21",
+    "capture_width": 1920,
+    "capture_height": 1080,
+    "capture_fps": 30
+  },
+  "streaming": {
+    "protocol": "rtsp",
+    "codec": "h264",
+    "width": 3840,
+    "height": 2160
+  },
+  "recording": {
+    "codec": "h265"
+  }
+}
