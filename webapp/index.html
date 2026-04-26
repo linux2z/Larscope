@@ -28,6 +28,13 @@
                     <button class="action-btn" onclick="sendCommand('start_record')">REC START</button>
                     <button class="action-btn stop" onclick="sendCommand('stop_record')">REC STOP</button>
                 </div>
+
+                <div class="card sd-card" style="margin-top: 30px;">
+                    <h2>Virtual SD Card</h2>
+                    <div id="file-list" class="file-explorer">
+                        <div class="file-item loading">Loading storage...</div>
+                    </div>
+                </div>
             </section>
 
             <section class="card status">
@@ -56,11 +63,10 @@
                 </div>
 
                 <div class="gpio-monitor">
-                    <h3>GPIO Diagnosis</h3>
+                    <h3>Hardware GPIO Sync</h3>
                     <div id="gpio-stats" class="stats-list">
-                        <div class="stat-row"><span>GPIO1_B0 (UP)</span> <span class="val">LOW</span></div>
-                        <div class="stat-row"><span>GPIO1_B1 (DOWN)</span> <span class="val">LOW</span></div>
-                        <div class="stat-row"><span>TLC59108 (SDA)</span> <span class="val pulse">ACTIVE</span></div>
+                        <!-- Polled dynamically -->
+                        <div class="stat-row">Scanning GPIO chips...</div>
                     </div>
                 </div>
             </section>

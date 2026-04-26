@@ -37,28 +37,57 @@ def handle_command():
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    # In a real scenario, we would read GPIOs here using libgpiod
-    # For diagnosis, we can return some mocked/detected states
-    # or even poll the C server for full state.
-    
-    # Mocking GPIO state for virtual diagnosis
-    # If this was running on hardware, we'd use:
-    # import gpiod
-    # chip = gpiod.Chip('gpiochip1')
-    # line = chip.get_line(30)
-    
-    status = {
-        "recording": False, # Would be updated by actual state
-        "streaming": True,
-        "gpios": [
-            {"name": "GPIO1_D6 (MIDDLE)", "value": 0},
-            {"name": "GPIO1_B3 (RIGHT)", "value": 1},
-            {"name": "GPIO1_B2 (LEFT)", "value": 0},
-            {"name": "GPIO1_B1 (UP)", "value": 0},
-            {"name": "GPIO1_B0 (DOWN)", "value": 0}
+    # Attempt to read real GPIO states if on hardware
+    gpios = []
+    try:
+        import gpiod
+        chip = gpiod.Chip('gpiochip1') # Inputs
+        for offset, name in [(30, "MIDDLE"), (11, "RIGHT"), (10, "LEFT"), (9, "UP"), (8, "DOWN")]:
+            line = chip.get_line(offset)
+            line.request(consumer="diag", type=gpiod.LINE_REQ_DIR_IN)
+            gpios.append({"name": f"BTN_{name}", "value": line.get_value()})
+            line.release()
+            
+        chip_out = gpiod.Chip('gpiochip3') # LEDs
+        for offset, name in [(4, "POWER"), (3, "BATT"), (2, "CHRG"), (1, "WIFI"), (0, "REC")]:
+            line = chip_out.get_line(offset)
+            # Just peek at the value if it's already an output
+            line.request(consumer="diag", type=gpiod.LINE_REQ_DIR_IN) 
+            gpios.append({"name": f"LED_{name}", "value": line.get_value()})
+            line.release()
+    except Exception as e:
+        # Fallback to mock for local testing
+        gpios = [
+            {"name": "BTN_MIDDLE", "value": 0},
+            {"name": "LED_REC", "value": 0},
+            {"name": "LED_POWER", "value": 1}
         ]
-    }
-    return jsonify(status)
+
+    return jsonify({
+        "recording": False,
+        "streaming": True,
+        "gpios": gpios
+    })
+
+@app.route('/api/files', methods=['GET'])
+def list_files():
+    storage_path = '/mnt/sdcard/larscope'
+    if not os.path.exists(storage_path):
+        os.makedirs(storage_path, exist_ok=True)
+    
+    files = []
+    for f in os.listdir(storage_path):
+        path = os.path.join(storage_path, f)
+        files.append({
+            "name": f,
+            "size": f"{os.path.getsize(path) // 1024} KB",
+            "time": os.path.getmtime(path)
+        })
+    return jsonify(sorted(files, key=lambda x: x['time'], reverse=True))
+
+@app.route('/api/download/<filename>')
+def download_file(filename):
+    return send_from_directory('/mnt/sdcard/larscope', filename)
 
 if __name__ == '__main__':
     print("Larscope Virtual Diagnostics WebApp running on http://0.0.0.0:5000")

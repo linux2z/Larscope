@@ -1,0 +1,51 @@
+/* Add these to style.css */
+
+.file-explorer {
+    max-height: 250px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.8rem;
+}
+
+.file-item:last-child { border: none; }
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name {
+    font-weight: 600;
+    color: var(--accent-blue);
+}
+
+.file-meta {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.download-link {
+    text-decoration: none;
+    color: var(--accent-green);
+    font-weight: bold;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border: 1px solid var(--accent-green);
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.download-link:hover {
+    background: var(--accent-green);
+    color: #000;
+}
