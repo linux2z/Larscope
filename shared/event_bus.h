@@ -38,6 +38,13 @@ typedef enum {
     /* Recording */
     EVT_RECORD_START,
     EVT_RECORD_STOP,
+    EVT_CAPTURE_IMAGE,
+    EVT_ZOOM_IN,
+    EVT_ZOOM_OUT,
+    EVT_ILLUM_ZONE1_CYCLE,
+    EVT_ILLUM_ZONE2_CYCLE,
+    EVT_BATTERY_UPDATE,
+    EVT_SYSTEM_STATE_REQ,
 
     /* Streaming */
     EVT_STREAM_START,

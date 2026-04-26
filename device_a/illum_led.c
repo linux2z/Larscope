@@ -27,7 +27,8 @@ static struct {
     struct gpiod_line *en_g1;
     struct gpiod_line *en_g2;
     int cur_brightness;
-    int state; /* 0=OFF, 1=50%, 2=75% */
+    int state_z1; /* 3=100%, 2=75%, 1=50%, 0=OFF */
+    int state_z2; /* 3=100%, 2=75%, 1=50%, 0=OFF */
 } g_ctx;
 
 static int i2c_write_reg(int addr, uint8_t reg, uint8_t val) {
@@ -39,34 +40,39 @@ static int i2c_write_reg(int addr, uint8_t reg, uint8_t val) {
     return 0;
 }
 
-static void set_brightness(int percent) {
-    g_ctx.cur_brightness = percent;
+static void set_brightness_z1(int percent) {
     uint8_t pwm_val = (percent * 255) / 100;
-    
-    /* Set PWM for all 8 channels on both chips */
     for (int i = 0; i < 8; i++) {
         i2c_write_reg(TLC_ADDR_1, REG_PWM0 + i, pwm_val);
-        i2c_write_reg(TLC_ADDR_2, REG_PWM0 + i, pwm_val);
     }
-    
-    ls_log(LS_LOG_DEBUG, "illum_led", "Brightness set to %d%%", percent);
+    ls_log(LS_LOG_DEBUG, "illum_led", "Zone 1 Brightness set to %d%%", percent);
 }
 
-static void cycle_brightness(void) {
-    g_ctx.state = (g_ctx.state + 1) % 3;
-    if (g_ctx.state == 0) set_brightness(0);
-    else if (g_ctx.state == 1) set_brightness(50);
-    else if (g_ctx.state == 2) set_brightness(75);
+static void set_brightness_z2(int percent) {
+    uint8_t pwm_val = (percent * 255) / 100;
+    for (int i = 0; i < 8; i++) {
+        i2c_write_reg(TLC_ADDR_2, REG_PWM0 + i, pwm_val);
+    }
+    ls_log(LS_LOG_DEBUG, "illum_led", "Zone 2 Brightness set to %d%%", percent);
+}
+
+static void apply_state(int state, void (*set_fn)(int)) {
+    if (state == 3) set_fn(100);
+    else if (state == 2) set_fn(75);
+    else if (state == 1) set_fn(50);
+    else if (state == 0) set_fn(0);
 }
 
 static void handle_event(const ls_event_t *event, void *user_data) {
     (void)user_data;
-    if (event->type == EVT_BUTTON_PRESS) {
-        const ls_payload_button_t *payload = (const ls_payload_button_t*)event->payload;
-        if (strcmp(payload->button, "right") == 0 || strcmp(payload->button, "left") == 0) {
-            /* Button controls LED cycle */
-            cycle_brightness();
-        }
+    if (event->type == EVT_ILLUM_ZONE1_CYCLE) {
+        g_ctx.state_z1 = (g_ctx.state_z1 - 1);
+        if (g_ctx.state_z1 < 0) g_ctx.state_z1 = 3;
+        apply_state(g_ctx.state_z1, set_brightness_z1);
+    } else if (event->type == EVT_ILLUM_ZONE2_CYCLE) {
+        g_ctx.state_z2 = (g_ctx.state_z2 - 1);
+        if (g_ctx.state_z2 < 0) g_ctx.state_z2 = 3;
+        apply_state(g_ctx.state_z2, set_brightness_z2);
     }
 }
 
@@ -98,21 +104,25 @@ static int illum_led_init(ls_module_t *mod) {
         if (g_ctx.en_g2) gpiod_line_request_output(g_ctx.en_g2, "larscope", 1);
     }
     
-    ls_event_subscribe(EVT_BUTTON_PRESS, handle_event, NULL);
+    ls_event_subscribe(EVT_ILLUM_ZONE1_CYCLE, handle_event, NULL);
+    ls_event_subscribe(EVT_ILLUM_ZONE2_CYCLE, handle_event, NULL);
     ls_log(LS_LOG_INFO, "illum_led", "Initialized");
     return 0;
 }
 
 static int illum_led_start(ls_module_t *mod) {
     (void)mod;
-    g_ctx.state = 2; /* Default 75% on startup */
-    set_brightness(75);
+    g_ctx.state_z1 = 3; /* Default 100% on startup */
+    g_ctx.state_z2 = 3;
+    set_brightness_z1(100);
+    set_brightness_z2(100);
     return 0;
 }
 
 static void illum_led_stop(ls_module_t *mod) {
     (void)mod;
-    set_brightness(0);
+    set_brightness_z1(0);
+    set_brightness_z2(0);
 }
 
 static void illum_led_destroy(ls_module_t *mod) {

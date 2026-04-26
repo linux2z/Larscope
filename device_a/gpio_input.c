@@ -53,8 +53,17 @@ static void* gpio_monitor_thread(void *arg) {
                         
                         ls_event_t evt;
                         memset(&evt, 0, sizeof(evt));
-                        evt.type = (event.event_type == GPIOD_LINE_EVENT_RISING_EDGE) ? 
-                                    EVT_BUTTON_PRESS : EVT_BUTTON_RELEASE;
+                        if (event.event_type == GPIOD_LINE_EVENT_RISING_EDGE) {
+                            if (strcmp(g_ctx.buttons[i].name, "upper") == 0) evt.type = EVT_ZOOM_IN;
+                            else if (strcmp(g_ctx.buttons[i].name, "lower") == 0) evt.type = EVT_ZOOM_OUT;
+                            else if (strcmp(g_ctx.buttons[i].name, "middle") == 0) evt.type = EVT_CAPTURE_IMAGE;
+                            else if (strcmp(g_ctx.buttons[i].name, "right") == 0) evt.type = EVT_ILLUM_ZONE1_CYCLE;
+                            else if (strcmp(g_ctx.buttons[i].name, "left") == 0) evt.type = EVT_ILLUM_ZONE2_CYCLE;
+                            else evt.type = EVT_BUTTON_PRESS;
+                        } else {
+                            evt.type = EVT_BUTTON_RELEASE;
+                        }
+                        
                         strncpy(evt.source, "gpio_input", sizeof(evt.source)-1);
                         
                         ls_payload_button_t *payload = (ls_payload_button_t*)evt.payload;

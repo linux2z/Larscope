@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Larscope Virtual Diagnostics</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>LARSCOPE <span>Diagnostics</span></h1>
+            <div id="connection-status" class="status-badge">Connecting...</div>
+        </header>
+
+        <main>
+            <section class="card controls">
+                <h2>Virtual Controls</h2>
+                <div class="button-grid">
+                    <button class="ctrl-btn up" onclick="sendCommand('zoom_in')"><span>▲</span></button>
+                    <button class="ctrl-btn left" onclick="sendCommand('cycle_zone2')"><span>◀</span></button>
+                    <button class="ctrl-btn middle" onclick="sendCommand('capture_image')"><span>📷</span></button>
+                    <button class="ctrl-btn right" onclick="sendCommand('cycle_zone1')"><span>▶</span></button>
+                    <button class="ctrl-btn down" onclick="sendCommand('zoom_out')"><span>▼</span></button>
+                </div>
+                <div class="secondary-controls">
+                    <button class="action-btn" onclick="sendCommand('start_record')">REC START</button>
+                    <button class="action-btn stop" onclick="sendCommand('stop_record')">REC STOP</button>
+                </div>
+            </section>
+
+            <section class="card status">
+                <h2>System Status</h2>
+                <div class="led-container">
+                    <div class="led-item">
+                        <div id="led-power" class="led green on"></div>
+                        <span>POWER</span>
+                    </div>
+                    <div class="led-item">
+                        <div id="led-battery" class="led green"></div>
+                        <span>BATTERY</span>
+                    </div>
+                    <div class="led-item">
+                        <div id="led-charging" class="led red"></div>
+                        <span>CHARGING</span>
+                    </div>
+                    <div class="led-item">
+                        <div id="led-wifi" class="led blue"></div>
+                        <span>WIFI</span>
+                    </div>
+                    <div class="led-item">
+                        <div id="led-recording" class="led red"></div>
+                        <span>RECORDING</span>
+                    </div>
+                </div>
+
+                <div class="gpio-monitor">
+                    <h3>GPIO Diagnosis</h3>
+                    <div id="gpio-stats" class="stats-list">
+                        <div class="stat-row"><span>GPIO1_B0 (UP)</span> <span class="val">LOW</span></div>
+                        <div class="stat-row"><span>GPIO1_B1 (DOWN)</span> <span class="val">LOW</span></div>
+                        <div class="stat-row"><span>TLC59108 (SDA)</span> <span class="val pulse">ACTIVE</span></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div id="log-console" class="console">
+                <div class="log-entry system">Larscope Virtual Console Initialized...</div>
+            </div>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

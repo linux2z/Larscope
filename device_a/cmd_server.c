@@ -35,6 +35,18 @@ static void handle_client(int client_fd) {
                     ls_event_emit(EVT_RECORD_STOP, "cmd_server");
                 } else if (strcmp(cmd, "capture_image") == 0) {
                     ls_event_emit(EVT_CAPTURE_IMAGE, "cmd_server");
+                } else if (strcmp(cmd, "zoom_in") == 0) {
+                    ls_event_emit(EVT_ZOOM_IN, "cmd_server");
+                } else if (strcmp(cmd, "zoom_out") == 0) {
+                    ls_event_emit(EVT_ZOOM_OUT, "cmd_server");
+                } else if (strcmp(cmd, "cycle_zone1") == 0) {
+                    ls_event_emit(EVT_ILLUM_ZONE1_CYCLE, "cmd_server");
+                } else if (strcmp(cmd, "cycle_zone2") == 0) {
+                    ls_event_emit(EVT_ILLUM_ZONE2_CYCLE, "cmd_server");
+                } else if (strcmp(cmd, "led_wifi_on") == 0) {
+                    ls_event_emit(EVT_NETWORK_UP, "cmd_server");
+                } else if (strcmp(cmd, "led_wifi_off") == 0) {
+                    ls_event_emit(EVT_NETWORK_DOWN, "cmd_server");
                 }
             }
             json_object_put(parsed);

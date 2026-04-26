@@ -10,93 +10,59 @@
 
 <br>
 
-Larscope is a production-grade, modular, and event-driven medical imaging system designed specifically for the Firefly CM3588 (Rockchip RK3588 SoC). Built entirely in **C**, it leverages Rockchip's Media Process Platform (MPP) and GStreamer to provide ultra-low-latency (<80ms) 4K video streaming, direct hardware manipulation (GPIO, I2C), and remote command execution.
+Larscope is a production-grade, modular, and event-driven medical imaging system designed for the Firefly CM3588 (Rockchip RK3588 SoC). 
 
-## ✨ Key Features
+## 🚀 New Features
+- **Virtual Diagnostics WebApp:** A stunning glassmorphism dashboard to control and diagnose the system remotely.
+- **10-Level Digital Zoom:** Precision cropping via GStreamer `videocrop`.
+- **Still Image Capture:** Instant JPEG snapshots saved directly to the storage.
+- **Dual-Zone Illumination:** 4-step dimming cycles for separate LED banks via I2C.
+- **5-LED Status Panel:** Visual indicators for Power, Battery, Charging, WiFi, and Recording.
 
-- 🏎️ **Ultra-Low Latency Streaming:** Hardware-accelerated 4K RTSP pipeline using Rockchip MPP (`mpph265enc` / `mpph264enc`).
-- 🔄 **Event-Driven Architecture:** Decoupled Pub/Sub event bus ensures non-blocking, asynchronous operation across all system components.
-- 🎛️ **Direct Hardware Control:** Native integration with `libgpiod` for button/LED management and I2C for TLC59108 illumination drivers.
-- 🌡️ **Thermal Management:** Active SoC thermal monitoring preventing hardware degradation during intensive video encoding.
-- 📡 **Remote Command Server:** Headless operation controlled via a robust TCP JSON API from the client monitoring device.
+## ✨ Core Technology
+- **Event-Driven Architecture:** Decoupled Pub/Sub event bus ensures non-blocking operation.
+- **Software Encoder Fallback:** Bypasses buggy Rockchip MPP drivers using optimized `x264enc` for maximum stability.
+- **Remote Command Server:** Full control via a TCP JSON API (Port 8601).
 
 ---
 
 ## 🏗️ System Architecture
 
-The project is split into three main logical components:
-
-1. **`shared/` (Core Framework):** The foundational engine providing the thread-safe Event Bus, Module Manager lifecycle hooks, JSON config parsing, and standard leveled logging.
-2. **`device_a/` (Headless Capture System):** Runs on the Firefly CM3588. Captures V4L2 video, upscales, encodes to SD card storage, and serves the RTSP feed alongside the TCP Command Server.
-3. **`device_b/` (Monitor Client):** Runs on the operator's machine (Ubuntu). Provides an optimized `playbin` client to receive the feed instantly and send JSON remote commands to Device A.
+1. **`shared/`**: Core framework (Event Bus, Config, Logger, Module Manager).
+2. **`device_a/`**: The primary capture system (`larscope-a`).
+3. **`device_b/`**: The monitoring/control client (`larscope-b`).
+4. **`webapp/`**: Virtual hardware dashboard (Flask + Vanilla JS).
 
 ---
 
-## 🚀 1-Click Installation
-
-Deploying Larscope is designed to be frictionless. Simply clone the repository onto your target machine and run the provided installation scripts.
+## 🛠️ 1-Click Installation
 
 ### 🎥 Device A (Headless Capture Unit)
-Run this on your Firefly CM3588. This script installs all required video/hardware dependencies, compiles the C code, and creates a `systemd` service for automatic boot recovery.
-
 ```bash
 git clone https://github.com/linux2z/Larscope.git
 cd Larscope
 chmod +x install_device_a.sh
 ./install_device_a.sh
 ```
-*To view system logs in production, run:* `journalctl -u larscope-a.service -f`
 
-### 💻 Device B (Monitor Client)
-Run this on the Ubuntu machine you intend to use as a monitor. It installs playback dependencies, compiles the client, and generates a Desktop shortcut.
-
+### 🌐 Diagnostics WebApp
 ```bash
-git clone https://github.com/linux2z/Larscope.git
-cd Larscope
-chmod +x install_device_b.sh
-./install_device_b.sh
+cd webapp
+chmod +x start_webapp.sh
+./start_webapp.sh
 ```
+*Access the dashboard at `http://<device_a_ip>:5000`*
 
 ---
 
-## 📂 Directory Structure
-
-```text
-Larscope/
-├── shared/                 # Core Event Bus & Utilities
-│   ├── event_bus.c/.h      # Thread-safe pub/sub engine
-│   ├── module.c/.h         # Application lifecycle manager
-│   ├── config.c/.h         # JSON configuration parser
-│   └── logger.c/.h         # Leveled async logger
-├── device_a/               # Capture Subsystem
-│   ├── main.c              # Entry point & module registration
-│   ├── camera.c            # GStreamer V4L2 capture pipeline
-│   ├── recording.c         # MPP Hardware H.264/H.265 encoding
-│   ├── streaming.c         # RTSP low-latency server
-│   ├── gpio_input.c        # Button polling via libgpiod
-│   ├── illum_led.c         # I2C TLC59108 lighting control
-│   └── cmd_server.c        # TCP JSON listener (Port 8601)
-├── device_b/               # Monitor Client
-│   ├── main.c              # Client entry point
-│   ├── stream_client.c     # Low-latency playbin viewer
-│   └── cmd_client.c        # TCP command emitter
-├── install_device_a.sh     # 1-Click Installer (A)
-├── install_device_b.sh     # 1-Click Installer (B)
-└── config.json             # Global System Configuration
-```
+## 🎛️ Hardware Button Mapping
+- **Upper Button:** Digital Zoom In
+- **Lower Button:** Digital Zoom Out
+- **Middle Button:** Still Image Capture (JPEG)
+- **Right Button:** Illumination Zone 1 Cycle (100% -> 75% -> 50% -> OFF)
+- **Left Button:** Illumination Zone 2 Cycle (100% -> 75% -> 50% -> OFF)
 
 ---
-
-## 🔧 Dependencies & Prerequisites
-
-- **OS:** Ubuntu 20.04+ (Linux Kernel 6.1.x)
-- **Compiler:** `gcc`, `make`, `build-essential`
-- **Libraries:**
-  - `libgstreamer1.0-dev`, `libgstreamer-plugins-base1.0-dev`
-  - `libgstrtspserver-1.0-dev`
-  - `libjson-c-dev`
-  - `libgpiod-dev`
-  - `i2c-tools`
 
 ## 🛡️ License
-Proprietary & Confidential. Unauthorized copying of this repository, via any medium, is strictly prohibited.
+Proprietary & Confidential. Unauthorized copying is prohibited.
