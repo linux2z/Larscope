@@ -12,7 +12,8 @@ echo "[1/4] Installing system dependencies..."
 sudo apt-get update
 sudo apt-get install -y build-essential gcc make git \
     libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
-    libgstrtspserver-1.0-dev libjson-c-dev libgpiod-dev i2c-tools
+    libgstrtspserver-1.0-dev libjson-c-dev libgpiod-dev i2c-tools \
+    gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav
 
 echo "[2/4] Compiling Device A software..."
 # Build the application
