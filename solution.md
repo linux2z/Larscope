@@ -1,7 +1,7 @@
-# Larscope System — Comprehensive Project Handoff
+# Lascope System — Comprehensive Project Handoff
 
 ## 1. Project Objective
-The Larscope project delivers a production-ready medical imaging system for the Firefly CM3588 platform. It achieves 4K video upscaling, <80ms low-latency RTSP streaming, synchronized hardware controls, and a virtual diagnostic web dashboard.
+The Lascope project delivers a production-ready medical imaging system for the Firefly CM3588 platform. It achieves 4K video upscaling, <80ms low-latency RTSP streaming, synchronized hardware controls, and a virtual diagnostic web dashboard.
 
 ## 2. Key Accomplishments (Completed)
 
@@ -14,7 +14,7 @@ The Larscope project delivers a production-ready medical imaging system for the 
 - **Fault-Tolerant Encoding:** Bypasses buggy Rockchip MPP hardware encoders with a tuned `x264enc` software fallback, ensuring 100% stability on Kernel 6.1.141.
 - **Multi-Branching:** A single camera source feeds:
   - **RTSP Stream:** Port 8554 (`/live`) for remote monitoring.
-  - **MP4 Recording:** High-bitrate H.264 recording to SD card.
+  - **MP4 Recording:** High-bitrate H.264 recording to SD card (`/mnt/sdcard/lascope`).
   - **Still Captures:** Instant JPEG snapshots via `appsink` branching.
 - **Digital Zoom:** 10-level digital zoom implemented via `videocrop` manipulation.
 
@@ -26,14 +26,15 @@ The Larscope project delivers a production-ready medical imaging system for the 
 
 ### D. Diagnostics & Deployment
 - **Virtual WebApp Dashboard:** A premium Glassmorphism UI (Flask + Vanilla JS) for remote diagnostics and virtual hardware control.
+- **One-Click Shortcut:** A Linux Desktop shortcut (`~/Desktop/LascopeDiagnostics.desktop`) that opens the dashboard in Chromium.
 - **1-Click Installation:** Automated shell scripts for system dependencies, C compilation, and `systemd` service deployment.
 
 ---
 
 ## 3. Critical Fixes & Knowledge
-- **MPP Driver Bug:** Rockchip MPP encoders (`mpph265enc`) fail on Kernel 6.1.141 due to `hal_vp8e_init` errors. **Solution:** Use the `x264enc` fallback implemented in `recording.c` and `streaming.c`.
-- **SSH Privilege Escalation:** Remote execution via `remote_exec.py` handles `sudo` prompts automatically using a PTY bridge.
-- **GPIO Sync:** The WebApp backend uses `libgpiod` to poll actual voltage states, providing a "Source of Truth" for hardware debugging.
+- **Name Change:** The project was renamed from Larscope to **Lascope**.
+- **MPP Driver Bug:** Rockchip MPP encoders (`mpph265enc`) fail on Kernel 6.1.141. **Solution:** Use the `x264enc` fallback implemented in `recording.c` and `streaming.c`.
+- **GPIO Sync:** The WebApp backend polls actual voltage states, and virtual buttons now trigger a "Simulated Pulse" in the UI for visual confirmation of signal flow.
 
 ---
 
@@ -58,8 +59,8 @@ The Larscope project delivers a production-ready medical imaging system for the 
 ---
 
 ## 6. Next Steps for Successors
-1. **I2C Finalization:** Run `i2cdetect -y 2` (or relevant bus) to verify the TLC59108 presence.
-2. **Battery BMS:** Link `EVT_BATTERY_UPDATE` to the actual battery driver once the physical BMS is connected.
-3. **Storage Mgmt:** Implement auto-deletion of old recordings when the SD card reaches 90% capacity in `storage.c`.
+1. **I2C Finalization:** Run `i2cdetect -y 2` to verify the TLC59108 presence.
+2. **Battery BMS:** Link `EVT_BATTERY_UPDATE` to the actual battery driver once connected.
+3. **Storage Mgmt:** Implement auto-deletion of old recordings when the SD card reaches 90% capacity.
 
 **Handoff Complete.**

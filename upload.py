@@ -27,14 +27,21 @@ def upload_dir(local_dir, remote_dir):
             upload_dir(local_path, remote_path)
 
 try:
-    sftp.mkdir('larscope_build')
+    sftp.mkdir('lascope_build')
 except:
     pass
 
-upload_dir('shared', 'larscope_build/shared')
-upload_dir('device_a', 'larscope_build/device_a')
-upload_dir('device_b', 'larscope_build/device_b')
-sftp.put('config.json', 'larscope_build/config.json')
+upload_dir('shared', 'lascope_build/shared')
+upload_dir('device_a', 'lascope_build/device_a')
+upload_dir('device_b', 'lascope_build/device_b')
+upload_dir('webapp', 'lascope_build/webapp')
+
+try:
+    sftp.put('config.json', 'lascope_build/config.json')
+    sftp.put('install_device_a.sh', 'lascope_build/install_device_a.sh')
+    sftp.put('solution.md', 'lascope_build/solution.md')
+except:
+    pass
 
 sftp.close()
 client.close()

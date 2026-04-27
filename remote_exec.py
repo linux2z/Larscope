@@ -1,35 +1,37 @@
+# remote_exec.py helper
 import paramiko
 import sys
-import os
 
-if len(sys.argv) < 2:
-    sys.stdout.buffer.write(b"Usage: python remote_exec.py <command>\n")
-    sys.exit(1)
+def execute_remote(cmd):
+    host = '192.168.137.59'
+    user = 'pi'
+    password = 'pi'
+    
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(host, username=user, password=password)
+    
+    stdin, stdout, stderr = client.exec_command(cmd, get_pty=True)
+    stdin.write(password + '\n')
+    stdin.flush()
+    
+    output = stdout.read().decode()
+    error = stderr.read().decode()
+    exit_status = stdout.channel.recv_exit_status()
+    
+    client.close()
+    return output, error, exit_status
 
-host = '192.168.137.59'
-user = 'pi'
-password = 'pi'
-command = sys.argv[1]
-
-client = paramiko.SSHClient()
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-try:
-    client.connect(host, username=user, password=password, timeout=15)
-    stdin, stdout, stderr = client.exec_command(command, timeout=300, get_pty=True)
-    if 'sudo' in command:
-        stdin.write(password + '\n')
-        stdin.flush()
-    out = stdout.read().decode('utf-8', errors='replace')
-    err = stderr.read().decode('utf-8', errors='replace')
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.stdout.buffer.write(b"Usage: python remote_exec.py <command>\n")
+        sys.exit(1)
+        
+    out, err, status = execute_remote(sys.argv[1])
     if out:
-        sys.stdout.buffer.write(out.encode('utf-8', errors='replace'))
-        sys.stdout.buffer.write(b'\n')
+        print(out)
     if err:
         sys.stderr.buffer.write(err.encode('utf-8', errors='replace'))
-        sys.stderr.buffer.write(b'\n')
-    sys.exit(stdout.channel.recv_exit_status())
-except Exception as e:
-    sys.stderr.buffer.write(f"SSH Error: {e}\n".encode('utf-8'))
     sys.exit(1)
 finally:
     client.close()

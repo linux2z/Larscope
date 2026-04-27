@@ -1,0 +1,14 @@
+[Unit]
+Description=Larscope Virtual Diagnostics WebApp
+After=network.target larscope-a.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/larscope_build/webapp
+ExecStart=/usr/bin/python3 /home/pi/larscope_build/webapp/backend.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

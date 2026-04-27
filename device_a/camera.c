@@ -10,6 +10,7 @@
 static struct {
     GstElement *pipeline;
     GstElement *src;
+    GstElement *crop;
     GstElement *tee;
     GstElement *scale;
     GstBus     *bus;
@@ -113,7 +114,7 @@ static int camera_init(ls_module_t *mod) {
     ls_event_subscribe(EVT_ZOOM_IN, handle_event, NULL);
     ls_event_subscribe(EVT_ZOOM_OUT, handle_event, NULL);
     
-    ls_log(LS_LOG_INFO, "camera", "Initialized for %s (upscaling to %dx%d)", 
+    ls_log(LS_LOG_INFO, "camera", "Lascope: Initialized for %s (upscaling to %dx%d)", 
            cfg->video_device, cfg->stream_width, cfg->stream_height);
     return 0;
 }

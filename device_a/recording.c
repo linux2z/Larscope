@@ -9,6 +9,7 @@
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include <sys/time.h>
+#include <stdio.h>
 
 static struct {
     GstElement *queue;
@@ -42,7 +43,7 @@ static GstFlowReturn on_new_sample(GstAppSink *appsink, gpointer data) {
             if (f) {
                 fwrite(map.data, 1, map.size, f);
                 fclose(f);
-                ls_log(LS_LOG_INFO, "recording", "Saved still image to %s", filename);
+                ls_log(LS_LOG_INFO, "recording", "Lascope: Saved still image to %s", filename);
             }
             gst_buffer_unmap(buffer, &map);
         }

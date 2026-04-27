@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -g -I../shared $(shell pkg-config --cflags json-c gstreamer-1.0 gstreamer-rtsp-server-1.0)
-LDFLAGS = -lpthread $(shell pkg-config --libs json-c gstreamer-1.0 gstreamer-rtsp-server-1.0) -lgpiod
+CFLAGS = -Wall -Wextra -O2 -g -I../shared $(shell pkg-config --cflags json-c gstreamer-1.0 gstreamer-rtsp-server-1.0 gstreamer-app-1.0)
+LDFLAGS = -lpthread $(shell pkg-config --libs json-c gstreamer-1.0 gstreamer-rtsp-server-1.0 gstreamer-app-1.0) -lgpiod
 
 TARGET = larscope-a
 

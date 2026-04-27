@@ -71,23 +71,34 @@ def get_status():
 
 @app.route('/api/files', methods=['GET'])
 def list_files():
-    storage_path = '/mnt/sdcard/larscope'
+    storage_path = '/mnt/sdcard/lascope'
+    print(f"Scanning storage: {storage_path}")
     if not os.path.exists(storage_path):
-        os.makedirs(storage_path, exist_ok=True)
+        try:
+            os.makedirs(storage_path, exist_ok=True)
+            print(f"Created storage directory: {storage_path}")
+        except Exception as e:
+            print(f"Failed to create storage: {e}")
+            return jsonify([])
     
     files = []
-    for f in os.listdir(storage_path):
-        path = os.path.join(storage_path, f)
-        files.append({
-            "name": f,
-            "size": f"{os.path.getsize(path) // 1024} KB",
-            "time": os.path.getmtime(path)
-        })
+    try:
+        for f in os.listdir(storage_path):
+            path = os.path.join(storage_path, f)
+            files.append({
+                "name": f,
+                "size": f"{os.path.getsize(path) // 1024} KB",
+                "time": os.path.getmtime(path)
+            })
+        print(f"Found {len(files)} files")
+    except Exception as e:
+        print(f"Error listing files: {e}")
+    
     return jsonify(sorted(files, key=lambda x: x['time'], reverse=True))
 
 @app.route('/api/download/<filename>')
 def download_file(filename):
-    return send_from_directory('/mnt/sdcard/larscope', filename)
+    return send_from_directory('/mnt/sdcard/lascope', filename)
 
 if __name__ == '__main__':
     print("Larscope Virtual Diagnostics WebApp running on http://0.0.0.0:5000")
